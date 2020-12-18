@@ -5,20 +5,7 @@
 #include <math.h>
 #include <algorithm>
 
-struct Double {
-	double x = 0.0;
-	Double(const double& y) : x(y) {
-		long long to_return;
-		x *= 100000;
-		to_return = static_cast<long long>(y);
-		x = to_return / 100000;
-	}
-
-	operator double() const {
-		return x;
-	}
-
-};
+const double eps = 0.000001;
 
 class Line;
 
@@ -30,7 +17,7 @@ struct Point {
 
 	friend std::ostream& operator<<(std::ostream& out, const Point& point);
 	bool operator==(const Point& right) const {
-		return (std::abs(x - right.x) < 0.000001 && std::abs(y - right.y) < 0.000001);
+		return (std::abs(x - right.x) < eps && std::abs(y - right.y) < eps);
 	}
 
 	bool operator!=(const Point& right) const {
@@ -89,31 +76,31 @@ public:
 	Line(const Point& point, const double& k) : a(k), b(-1), c(point.y - point.x * k) {}
 	Line(const Point& point1, const Point& point2) : a(point1.y - point2.y), b(point2.x - point1.x), c(point1.x* point2.y - point1.y * point2.x) {}
 	Line(double a, double b, double c) : a(a), b(b), c(c) {}
-	double yVal(const double& x) const { // при b = -1
+	double yVal(const double& x) const { 
 		return (a * x + c) / (-b);
 	}
 
 	bool operator==(const Line& right) const {
 		double ta = 0.0;
-		if (abs(right.a) < 0.00001) {
-			if (abs(a) > 0.00001) return false;
+		if (abs(right.a) < eps) {
+			if (abs(a) > eps) return false;
 			else ta = 1;
 		}
 		else ta = a / right.a;
 		double tb = 0.0;
-		if (abs(right.b) < 0.00001) {
-			if (abs(b) > 0.00001) return false;
+		if (abs(right.b) < eps) {
+			if (abs(b) > eps) return false;
 			else tb = 1;
 		}
 		else tb = b / right.b;
-		if (abs(ta - tb) > 0.00001) return false;
+		if (abs(ta - tb) > eps) return false;
 		double tc = 0.0;
-		if (abs(right.c) < 0.00001) {
-			if (abs(c) > 0.00001) return false;
+		if (abs(right.c) < eps) {
+			if (abs(c) > eps) return false;
 			else tc = 1;
 		}
 		else tc = c / right.c;
-		if (abs(ta - tc) > 0.00001) return false;
+		if (abs(ta - tc) > eps) return false;
 		return true;
 	}
 
@@ -237,7 +224,7 @@ public:
 		return vertices.size();
 	}
 
-	void setSidesVectors(bool flag = false) const { //
+	void setSidesVectors(bool flag = false) const { 
 		if (sides.size() == 0 || (sides.size() != 0 && flag == true)) {
 			sides.resize(vertices.size());
 			for (size_t i = 0; i + 1 < sides.size(); ++i) {
@@ -281,7 +268,7 @@ public:
 	}
 
 	std::vector<double> setAngles() const {
-		std::vector<double> angles(vertices.size()); //assssssssssss
+		std::vector<double> angles(vertices.size()); 
 		setSidesLength();
 		for (size_t i = 0; i < angles.size(); ++i) {
 			angles[i] = (sides[(i + 1) % angles.size()].x() * sides[i].x() + sides[(i + 1) % angles.size()].y() * sides[i].y()) / (sides_length[(i + 1) % sides_length.size()] * sides_length[i]);
@@ -296,21 +283,21 @@ public:
 		another.setSidesLength();
 		size_t inc = 0;
 		while (inc < sides_length.size()) {
-			while (inc < sides_length.size() && abs(sides_length[inc] - another.sides_length[0]) > 0.00001) {
+			while (inc < sides_length.size() && abs(sides_length[inc] - another.sides_length[0]) > eps) {
 				++inc;
 			}
 			if (inc == sides_length.size()) return false;
 			bool flag = true;
 			size_t tmp = 1;                        
-			if (abs(sides_length[(inc + 1) % sides_length.size()] - another.sides_length[tmp]) < 0.00001) {
+			if (abs(sides_length[(inc + 1) % sides_length.size()] - another.sides_length[tmp]) < eps) {
 				while (flag && tmp < sides_length.size()) {
-					if (abs(sides_length[(inc + tmp) % sides_length.size()] - another.sides_length[tmp]) > 0.00001) flag = false;
+					if (abs(sides_length[(inc + tmp) % sides_length.size()] - another.sides_length[tmp]) > eps) flag = false;
 					++tmp;
 				}
 			}
-			else if (abs(sides_length[(sides_length.size() + inc - 1) % sides_length.size()] - another.sides_length[tmp]) < 0.00001) {
+			else if (abs(sides_length[(sides_length.size() + inc - 1) % sides_length.size()] - another.sides_length[tmp]) < eps) {
 				while (flag && tmp < sides_length.size()) {
-					if (abs(sides_length[(sides_length.size() + inc - tmp) % sides_length.size()] - another.sides_length[tmp]) > 0.00001) flag = false;
+					if (abs(sides_length[(sides_length.size() + inc - tmp) % sides_length.size()] - another.sides_length[tmp]) > eps) flag = false;
 					++tmp;
 				}
 			}
@@ -325,15 +312,15 @@ public:
 			tmp = 1;
 			std::vector<double> angles = setAngles();
 			std::vector<double> another_angles = another.setAngles();
-			if (abs(sides_length[(inc + 1) % sides_length.size()] - another.sides_length[tmp]) < 0.00001) {
+			if (abs(sides_length[(inc + 1) % sides_length.size()] - another.sides_length[tmp]) < eps) {
 				while (flag && tmp < sides_length.size()) {
-					if (abs(angles[(inc + tmp) % sides_length.size()] - another_angles[tmp]) > 0.00001) flag = false;
+					if (abs(angles[(inc + tmp) % sides_length.size()] - another_angles[tmp]) > eps) flag = false;
 					++tmp;
 				}
 			}
-			else if (abs(sides_length[(sides_length.size() + inc - 1) % sides_length.size()] - another.sides_length[tmp]) < 0.00001) {
+			else if (abs(sides_length[(sides_length.size() + inc - 1) % sides_length.size()] - another.sides_length[tmp]) < eps) {
 				while (flag && tmp < sides_length.size()) {
-					if (abs(angles[(sides_length.size() + inc - tmp - 1) % sides_length.size()] - another_angles[tmp]) > 0.00001) flag = false;
+					if (abs(angles[(sides_length.size() + inc - tmp - 1) % sides_length.size()] - another_angles[tmp]) > eps) flag = false;
 					++tmp;
 				}
 			}
@@ -350,21 +337,21 @@ public:
 		std::vector<double> another_angles = another.setAngles();
 		size_t inc = 0;
 		while (inc < sides_length.size()) {
-			while (inc < sides_length.size() && abs(angles[inc] - another_angles[0]) > 0.00001) {
+			while (inc < sides_length.size() && abs(angles[inc] - another_angles[0]) > eps) {
 				++inc;
 			}
 			if (inc == sides_length.size()) return false;
 			bool flag = true;
-			size_t tmp = 1;                        /////////////////////////////////////////////////////////////проверь size_t
-			if (abs(angles[(inc + 1) % sides_length.size()] - another_angles[tmp]) < 0.00001) {
+			size_t tmp = 1;                  
+			if (abs(angles[(inc + 1) % sides_length.size()] - another_angles[tmp]) < eps) {
 				while (flag && tmp < sides_length.size()) {
-					if (abs(angles[(inc + tmp) % sides_length.size()] - another_angles[tmp]) > 0.00001) flag = false;
+					if (abs(angles[(inc + tmp) % sides_length.size()] - another_angles[tmp]) > eps) flag = false;
 					++tmp;
 				}
 			}
-			else if (abs(angles[(sides_length.size() + inc - 1) % sides_length.size()] - another_angles[tmp]) < 0.00001) {
+			else if (abs(angles[(sides_length.size() + inc - 1) % sides_length.size()] - another_angles[tmp]) < eps) {
 				while (flag && tmp < sides_length.size()) {
-					if (abs(angles[(sides_length.size() + inc - tmp) % sides_length.size()] - another_angles[tmp]) > 0.00001) flag = false;
+					if (abs(angles[(sides_length.size() + inc - tmp) % sides_length.size()] - another_angles[tmp]) > eps) flag = false;
 					++tmp;
 				}
 			}
@@ -378,15 +365,15 @@ public:
 			}
 			tmp = 1;
 			double k = sides_length[inc] / another.sides_length[0];
-			if (abs(k - sides_length[(inc + 1) % sides_length.size()] / another.sides_length[tmp]) < 0.00001) {
+			if (abs(k - sides_length[(inc + 1) % sides_length.size()] / another.sides_length[tmp]) < eps) {
 				while (flag && tmp < sides_length.size()) {
-					if (abs(k - sides_length[(inc + tmp) % sides_length.size()] / another.sides_length[tmp]) > 0.00001) flag = false;
+					if (abs(k - sides_length[(inc + tmp) % sides_length.size()] / another.sides_length[tmp]) > eps) flag = false;
 					++tmp;
 				}
 			}
-			else if (abs(sides_length[(sides_length.size() + inc - 1) % sides_length.size()] - another.sides_length[tmp]) < 0.00001) {
+			else if (abs(sides_length[(sides_length.size() + inc - 1) % sides_length.size()] - another.sides_length[tmp]) < eps) {
 				while (flag && tmp < sides_length.size()) {
-					if (abs(k - sides_length[(sides_length.size() + inc - tmp) % sides_length.size()] / another.sides_length[tmp]) > 0.00001) flag = false;
+					if (abs(k - sides_length[(sides_length.size() + inc - tmp) % sides_length.size()] / another.sides_length[tmp]) > eps) flag = false;
 					++tmp;
 				}
 			}
@@ -403,7 +390,7 @@ public:
 	double convexArea(bool) const;
 
 	bool operator==(const Polygon& another) const {
-		if (this == &another) return true; //остальные случаи описать
+		if (this == &another) return true;
 		if (vertices.size() != another.vertices.size()) return false;
 		size_t inc = 0;
 		while (inc < vertices.size() && vertices[inc] != another.vertices[0]) {
@@ -475,7 +462,7 @@ public:
 		int sign = vectors_to_virtices[0].signOfRotation(vectors_to_virtices[1]);
 		while (inc  < vertices.size()) {
 			int new_sign = vectors_to_virtices[inc].signOfRotation(vectors_to_virtices[inc + 1]);
-			if (new_sign * sign < -0.00001) return false;
+			if (new_sign * sign < -eps) return false;
 			++inc;
 		}
 		return true;
@@ -552,11 +539,11 @@ public:
 	}
 
 	bool isCongruentTo(const Ellipse& another) const {
-		return std::abs(a - another.a) < 0.000001 && std::abs(Vector_(f1, f2).length() - Vector_(another.f1, another.f2).length()) < 0.000001;
+		return std::abs(a - another.a) < eps && std::abs(Vector_(f1, f2).length() - Vector_(another.f1, another.f2).length()) < eps;
 	}
 
 	bool isSimilarTo(const Ellipse& another) const {
-		return std::abs(a / another.a - c / another.c) < 0.000001;
+		return std::abs(a / another.a - c / another.c) < eps;
 	}
 	
 	bool isSimilarTo(const Shape& another) const override {
@@ -570,7 +557,7 @@ public:
 	}
 
 	bool containsPoint(const Point& point) const override {
-		bool flag = (Vector_(point, f1).length() + Vector_(point, f2).length() - 2 * a < 0.00001);
+		bool flag = (Vector_(point, f1).length() + Vector_(point, f2).length() - 2 * a < eps);
 		return flag;
 	}
 
@@ -592,7 +579,7 @@ public:
 	}
 
 	bool operator==(const Ellipse& another) {
-		bool flag = f1 == another.f1 && f2 == another.f2 && std::abs(a - another.a) < 0.000001;
+		bool flag = f1 == another.f1 && f2 == another.f2 && std::abs(a - another.a) < eps;
 		return flag;
 	}
 
@@ -663,7 +650,7 @@ public:
 		return Point((vertices[0].x + vertices[2].x) / 2, (vertices[0].y + vertices[2].y) / 2);
 	}
 
-	Rectangle(const Point& first, const Point& second, double coefficient) { //описать поворот для начала
+	Rectangle(const Point& first, const Point& second, double coefficient) { 
 		vertices.resize(4);
 		vertices[0] = first;
 		vertices[2] = second;
@@ -689,7 +676,7 @@ public:
 		if (this == &another) return true;
 		setSidesLength();
 		another.setSidesLength();
-		bool flag =(std::abs(sides_length[0] - another.sides_length[0]) < 0.000001 && std::abs(sides_length[1] - another.sides_length[1]) < 0.000001) || (std::abs(sides_length[1] - another.sides_length[0]) < 0.000001 && std::abs(sides_length[0] - another.sides_length[1]) < 0.000001);
+		bool flag =(std::abs(sides_length[0] - another.sides_length[0]) < eps && std::abs(sides_length[1] - another.sides_length[1]) < eps) || (std::abs(sides_length[1] - another.sides_length[0]) < eps && std::abs(sides_length[0] - another.sides_length[1]) < eps);
 		return flag;
 	}
 
@@ -724,7 +711,7 @@ public:
 	bool isCongruentTo(const Square& another) const {
 		setSidesLength();
 		another.setSidesLength();
-		bool flag = (std::abs(sides_length[0] - another.sides_length[0]) < 0.000001);
+		bool flag = (std::abs(sides_length[0] - another.sides_length[0]) < eps);
 		return flag;
 	}
 
